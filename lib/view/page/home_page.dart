@@ -1,48 +1,60 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:memo/controller/memos_controller.dart';
+import 'package:memo/extension/date_time_extension.dart';
+import 'package:memo/extension/string_extension.dart';
+import 'package:memo/model/memo.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final memos = ref.watch(memosProvider);
+    final memosController = ref.read(memosProvider.notifier);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('メモ'),
         actions: [
           IconButton(
-            onPressed: () => Navigator.pushNamed(context, '/input'),
             icon: const Icon(Icons.add),
+            onPressed: () => Navigator.of(context).pushNamed(
+              '/input',
+              arguments: Memo(),
+            ),
           ),
         ],
       ),
       body: ListView.separated(
-        separatorBuilder: (context, index) => const Divider(height: 1),
-        itemCount: 10,
-        itemBuilder: (context, index) {
-          return Dismissible(
-            key: const Key('キー'),
-            direction: DismissDirection.endToStart,
-            onDismissed: (direction) => {},
-            background: Container(
-              color: Colors.red,
-              child: const Icon(
-                Icons.delete,
-                color: Colors.white,
-              ),
+        separatorBuilder: (_, index) => const Divider(height: 1),
+        itemCount: memos.length,
+        itemBuilder: (_, index) => Dismissible(
+          key: Key(memos[index].id.toString()),
+          direction: DismissDirection.endToStart,
+          onDismissed: (_) => memosController.delete(memo: memos[index]),
+          background: Container(
+            color: Colors.red,
+            child: const Icon(Icons.delete, color: Colors.white),
+          ),
+          child: ListTile(
+            trailing: const Icon(Icons.arrow_forward_ios),
+            title: Text(
+              memos[index].text.replaceLineBrakeWithSpace,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(_).textTheme.bodyMedium,
             ),
-            child: ListTile(
-              trailing: const Icon(Icons.arrow_forward_ios),
-              title: Text(
-                'タイトル',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              subtitle: Text(
-                'サブタイトル',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
+            subtitle: Text(
+              memos[index].updatedAt.toFormatString,
+              style: Theme.of(_).textTheme.bodySmall,
             ),
-          );
-        },
+            onTap: () => Navigator.of(_).pushNamed(
+              '/input',
+              arguments: memos[index],
+            ),
+          ),
+        ),
       ),
     );
   }
