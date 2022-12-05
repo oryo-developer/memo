@@ -9,21 +9,18 @@ final memosProvider = StateNotifierProvider<MemosController, List<Memo>>((ref) {
 
 class MemosController extends StateNotifier<List<Memo>> {
   MemosController({required this.memoService}) : super([]) {
-    Future(() async {
-      state = await findAll();
-    });
-    memoService.stream.listen((memos) {
-      state = memos;
-    });
+    Future(() async => state = await findAll());
+    memoService.stream.listen((memos) => state = memos);
   }
 
   final MemoService memoService;
 
   Future<List<Memo>> findAll() => memoService.findAll();
 
-  void update({required String text}) {
-    final memo = Memo()
+  void update({required Memo memo, required String text}) {
+    memo
       ..text = text
+      ..trimText = text.trim()
       ..updatedAt = DateTime.now();
     memoService.put(memo: memo);
   }
