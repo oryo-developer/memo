@@ -31,7 +31,7 @@ MIT License
 
 ## 開発者
 
-おりょう
+### おりょう
 
 Gmail: [oryo.developer@gmail.com](mailto:oryo.developer@gmail.com)
 
