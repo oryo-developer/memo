@@ -6,5 +6,6 @@ part 'memo.g.dart';
 class Memo {
   Id id = Isar.autoIncrement;
   String text = '';
+  String trimText = '';
   DateTime updatedAt = DateTime.now();
 }

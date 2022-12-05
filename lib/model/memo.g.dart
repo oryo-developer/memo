@@ -22,8 +22,13 @@ const MemoSchema = CollectionSchema(
       name: r'text',
       type: IsarType.string,
     ),
-    r'updatedAt': PropertySchema(
+    r'trimText': PropertySchema(
       id: 1,
+      name: r'trimText',
+      type: IsarType.string,
+    ),
+    r'updatedAt': PropertySchema(
+      id: 2,
       name: r'updatedAt',
       type: IsarType.dateTime,
     )
@@ -49,6 +54,7 @@ int _memoEstimateSize(
 ) {
   var bytesCount = offsets.last;
   bytesCount += 3 + object.text.length * 3;
+  bytesCount += 3 + object.trimText.length * 3;
   return bytesCount;
 }
 
@@ -59,7 +65,8 @@ void _memoSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeString(offsets[0], object.text);
-  writer.writeDateTime(offsets[1], object.updatedAt);
+  writer.writeString(offsets[1], object.trimText);
+  writer.writeDateTime(offsets[2], object.updatedAt);
 }
 
 Memo _memoDeserialize(
@@ -71,7 +78,8 @@ Memo _memoDeserialize(
   final object = Memo();
   object.id = id;
   object.text = reader.readString(offsets[0]);
-  object.updatedAt = reader.readDateTime(offsets[1]);
+  object.trimText = reader.readString(offsets[1]);
+  object.updatedAt = reader.readDateTime(offsets[2]);
   return object;
 }
 
@@ -85,6 +93,8 @@ P _memoDeserializeProp<P>(
     case 0:
       return (reader.readString(offset)) as P;
     case 1:
+      return (reader.readString(offset)) as P;
+    case 2:
       return (reader.readDateTime(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -359,6 +369,135 @@ extension MemoQueryFilter on QueryBuilder<Memo, Memo, QFilterCondition> {
     });
   }
 
+  QueryBuilder<Memo, Memo, QAfterFilterCondition> trimTextEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'trimText',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Memo, Memo, QAfterFilterCondition> trimTextGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'trimText',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Memo, Memo, QAfterFilterCondition> trimTextLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'trimText',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Memo, Memo, QAfterFilterCondition> trimTextBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'trimText',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Memo, Memo, QAfterFilterCondition> trimTextStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'trimText',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Memo, Memo, QAfterFilterCondition> trimTextEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'trimText',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Memo, Memo, QAfterFilterCondition> trimTextContains(String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'trimText',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Memo, Memo, QAfterFilterCondition> trimTextMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'trimText',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Memo, Memo, QAfterFilterCondition> trimTextIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'trimText',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Memo, Memo, QAfterFilterCondition> trimTextIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'trimText',
+        value: '',
+      ));
+    });
+  }
+
   QueryBuilder<Memo, Memo, QAfterFilterCondition> updatedAtEqualTo(
       DateTime value) {
     return QueryBuilder.apply(this, (query) {
@@ -430,6 +569,18 @@ extension MemoQuerySortBy on QueryBuilder<Memo, Memo, QSortBy> {
     });
   }
 
+  QueryBuilder<Memo, Memo, QAfterSortBy> sortByTrimText() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'trimText', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Memo, Memo, QAfterSortBy> sortByTrimTextDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'trimText', Sort.desc);
+    });
+  }
+
   QueryBuilder<Memo, Memo, QAfterSortBy> sortByUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updatedAt', Sort.asc);
@@ -468,6 +619,18 @@ extension MemoQuerySortThenBy on QueryBuilder<Memo, Memo, QSortThenBy> {
     });
   }
 
+  QueryBuilder<Memo, Memo, QAfterSortBy> thenByTrimText() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'trimText', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Memo, Memo, QAfterSortBy> thenByTrimTextDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'trimText', Sort.desc);
+    });
+  }
+
   QueryBuilder<Memo, Memo, QAfterSortBy> thenByUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'updatedAt', Sort.asc);
@@ -489,6 +652,13 @@ extension MemoQueryWhereDistinct on QueryBuilder<Memo, Memo, QDistinct> {
     });
   }
 
+  QueryBuilder<Memo, Memo, QDistinct> distinctByTrimText(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'trimText', caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<Memo, Memo, QDistinct> distinctByUpdatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'updatedAt');
@@ -506,6 +676,12 @@ extension MemoQueryProperty on QueryBuilder<Memo, Memo, QQueryProperty> {
   QueryBuilder<Memo, String, QQueryOperations> textProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'text');
+    });
+  }
+
+  QueryBuilder<Memo, String, QQueryOperations> trimTextProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'trimText');
     });
   }
 
