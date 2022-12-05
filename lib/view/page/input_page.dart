@@ -42,7 +42,7 @@ class InputPage extends HookConsumerWidget {
             focusNode: focusNode,
             keyboardType: TextInputType.multiline,
             maxLines: null,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.bodyMedium,
             decoration: const InputDecoration(
               contentPadding: EdgeInsets.all(8),
               border: InputBorder.none,
