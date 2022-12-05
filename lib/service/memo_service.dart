@@ -5,7 +5,7 @@ import 'package:isar/isar.dart';
 import 'package:memo/model/memo.dart';
 import 'package:path_provider/path_provider.dart';
 
-final isarProvider = FutureProvider((ref) async {
+final isarProvider = FutureProvider((_) async {
   final directory = await getApplicationSupportDirectory();
   return Isar.open([MemoSchema], directory: directory.path);
 });
@@ -16,7 +16,7 @@ class MemoService {
   MemoService({required this.ref}) {
     Future(() async {
       final isar = await ref.watch(isarProvider.future);
-      isar.memos.watchLazy().listen((event) async {
+      isar.memos.watchLazy().listen((_) async {
         streamController.sink.add(await findAll());
       });
     });
@@ -28,7 +28,15 @@ class MemoService {
 
   Stream<List<Memo>> get stream => streamController.stream;
 
+  void deleteEmptyMemos() async {
+    final isar = await ref.watch(isarProvider.future);
+    isar.writeTxn(() async {
+      await isar.memos.filter().trimTextIsEmpty().deleteAll();
+    });
+  }
+
   Future<List<Memo>> findAll() async {
+    deleteEmptyMemos();
     final isar = await ref.watch(isarProvider.future);
     return isar.memos.where().sortByUpdatedAtDesc().findAll();
   }
