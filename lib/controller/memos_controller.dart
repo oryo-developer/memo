@@ -12,7 +12,6 @@ class MemosController extends StateNotifier<List<Memo>> {
     Future(() async {
       state = await findAll();
     });
-
     memoService.stream.listen((memos) {
       state = memos;
     });
@@ -26,14 +25,11 @@ class MemosController extends StateNotifier<List<Memo>> {
     final memo = Memo()
       ..text = text
       ..updatedAt = DateTime.now();
-
     memoService.put(memo: memo);
   }
 
-  void delete({required int index}) async {
-    final memos = await findAll();
-    final id = memos[index].id;
-
+  void delete({required Memo memo}) async {
+    final id = memo.id;
     memoService.delete(id: id);
   }
 }
