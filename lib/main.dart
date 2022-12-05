@@ -18,8 +18,8 @@ class MyApp extends StatelessWidget {
       theme: MyTheme.themeData,
       initialRoute: '/',
       routes: {
-        '/': (context) => const HomePage(),
-        '/input': (context) => const InputPage(),
+        '/': (_) => const HomePage(),
+        '/input': (_) => const InputPage(),
       },
     );
   }
