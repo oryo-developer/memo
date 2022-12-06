@@ -4,9 +4,7 @@ import 'package:memo/view/page/home_page.dart';
 import 'package:memo/view/page/input_page.dart';
 import 'package:memo/view/theme/my_theme.dart';
 
-void main() {
-  runApp(const ProviderScope(child: MyApp()));
-}
+void main() => runApp(const ProviderScope(child: MyApp()));
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
